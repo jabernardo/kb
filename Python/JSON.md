@@ -1,7 +1,9 @@
 # Common Questions for Python JSON
 
+## Dictionary to JSON
+
 <details>
-  <summary>Dictionary to JSON</summary>
+  <summary>View Code</summary>
   
 ```python
 
