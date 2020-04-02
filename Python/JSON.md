@@ -2,6 +2,7 @@
 
 <details>
   <summary>Dictionary to JSON</summary>
+  
 ```python
 
 import json
@@ -12,6 +13,6 @@ data = {
 }
 
 print(json.dumps(data))
-
 ```
+
 </details>
