@@ -1,5 +1,6 @@
 import glob
 import re
+from difflib import SequenceMatcher
 
 def get_markdowns():
   return glob.glob("*/*.md")
@@ -21,46 +22,47 @@ def parse_markdown_data(text):
 def parse_markdown(text):
   regex = r"^## (.*)\s+([^#]+)\s+$"
   matches = re.findall(regex, text, flags = re.MULTILINE)
-  content = []
+  content = {}
 
   if matches:
     for match in matches:
       code = parse_markdown_data(match[1])
 
       if code:
-        content.append({
-          "title": match[0],
+        content[match[0]] = {
           "language": code["language"],
           "code": code["gist"]
-        })
+        }
 
   return content
 
-def get_info(keyword):
-  info = []
+def get_info():
+  info = {}
 
   for md in get_markdowns():
-    try:
-      with open(md) as kb:
-        data = parse_markdown(kb.read())
+    # try:
+    with open(md) as kb:
+      data = parse_markdown(kb.read())
+      
+      for key, content in data.items():
+        info[key] = content
 
-        for content in data:
-          if keyword in content["title"] or keyword in content["code"]:
-            info.append(content)
-
-        kb.close()
-    except Exception as ex:
-      print(ex)
+      kb.close()
+    # except Exception as ex:
+    #   print(ex)
 
   return info
 
 def main():
   keyword = input("Search: ")
-  infos = get_info(keyword)
+  infos = get_info()
 
-  for info in infos:
-    print(f"{ '=' * 80 }\n{info['title']} (in {info['language']})")
-    print(f"{ '=' * 80 }\n{ info['code'].strip() }\n{ '=' * 80 }\n")
+  for title, gist in infos.items():
+    title_text = f"{title} (in {gist['language']})"
+
+    if SequenceMatcher(None, keyword, title_text).ratio() > 0.1:
+      print(f"{ '=' * 80 }\n{ title_text }")
+      print(f"{ '=' * 80 }\n{ gist['code'].strip() }\n{ '=' * 80 }\n")
 
 if __name__ == "__main__":
   main()
